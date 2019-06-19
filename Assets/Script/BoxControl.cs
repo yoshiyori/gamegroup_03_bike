@@ -23,7 +23,7 @@ public class BoxControl : MonoBehaviour
     private bool LCflag = false;
 
     private float vel;
-    private bool StopFlag = false;
+    public bool StopFlag = false;
     private Vector3 ppos;
 
     private float r;
@@ -86,7 +86,12 @@ public class BoxControl : MonoBehaviour
         {
             StopFlag = true;
         }
-        Debug.Log(vecFront);
+
+        if (Input.GetKey(KeyCode.A))
+        {
+            vel += 0.05f;
+        }
+
         if (StopFlag == true)
         {
             pos.x += (MOVE_SPEED - vel) * vecFront.x * Time.deltaTime;
@@ -99,6 +104,7 @@ public class BoxControl : MonoBehaviour
                 StopFlag = false;
             }
         }
+        
 
         if (Input.GetKey(KeyCode.RightArrow))
         {
@@ -147,4 +153,10 @@ public class BoxControl : MonoBehaviour
 
         ppos = pos;
     }
+
+
+
+
+
+
 }
