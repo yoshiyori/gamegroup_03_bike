@@ -6,16 +6,31 @@ public class CameraControl : MonoBehaviour
 {
     public GameObject player;
     private Vector3 offset;
-
+    Vector3 targetPos;
+    public BoxControl Box;
+    public GameObject MainCamera;
+    public GameObject OtherCamera;
     // Start is called before the first frame update
     void Start()
     {
-        offset = transform.position - player.transform.position;
+        targetPos = player.transform.position;
     }
 
     // Update is called once per frame
     void Update()
     {
-        transform.position = player.transform.position + offset;
+        transform.position += player.transform.position - targetPos;
+        targetPos = player.transform.position;
+        //transform.position = player.transform.position + offset;
+        if (Box.CurveFlag == 1) transform.RotateAround(player.transform.position, Vector3.up, 1);
+        else if (Box.CurveFlag == 2) transform.RotateAround(player.transform.position, Vector3.up, -1);
+        //transform.eulerAngles += new Vector3(angle.y, angle.x);
+
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            MainCamera.SetActive(!MainCamera.activeSelf);
+            OtherCamera.SetActive(!OtherCamera.activeSelf);
+        }
     }
 }
+

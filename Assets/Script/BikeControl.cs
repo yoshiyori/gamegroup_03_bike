@@ -10,9 +10,7 @@ public class BikeControl : MonoBehaviour
     public float CURVE_SPEED;
     public float MAX_SPEED;
     public float MAX_BOOST;
-    Vector3 moveVector = new Vector3(0,0,1.0f);                  // 移動速度の入力
 
-    
     public float HP;
     public float MAX_HP;
 
@@ -26,6 +24,16 @@ public class BikeControl : MonoBehaviour
     private bool StopFlag = false;
     private Vector3 ppos;
 
+    [Range(-1.0f, 1.0f)] public float Steering = 0.0f;
+    [Range(-1.0f, 1.0f)] public float EngineTorqu = 0.0f;
+    public float BreakTorqu = 0.0f;
+    public float MaxAngle = 30.0f;
+    public float MaxTorqu = 100.0f;
+    public float MaxBreakTorqu = 200.0f;
+
+    public WheelCollider FrontWheel;
+    public WheelCollider RearWheel;
+
     void Start()
     {
         rig = GetComponent<Rigidbody>();
@@ -33,110 +41,76 @@ public class BikeControl : MonoBehaviour
         vel = MOVE_SPEED;
         ppos = new Vector3(0, 0, 0);
     }
-
+    
     void Update()
     {
-        var pos = transform.position;
-        var rot = transform.rotation;
-
-        /*
-        if (Input.GetKey(KeyCode.Z) && Input.GetKey(KeyCode.LeftShift))
+        if (Input.GetKey(KeyCode.LeftArrow) && Steering > -1.0f)
         {
-            if (rig.velocity.magnitude < MAX_BOOST) rig.AddForce(BOOST_SPEED * moveVector);
-            this.HP -= 0.1f;
+            Steering -= 0.01f; 
         }
-        else if (Input.GetKey(KeyCode.Z))
+        else if (Input.GetKey(KeyCode.RightArrow) && Steering < 1.0f)
         {
-            if (rig.velocity.magnitude < MAX_SPEED) rig.AddForce(MOVE_SPEED * (new Vector3(0, 0, 1)));
-            this.HP -= 0.05f;
+            Steering += 0.01f;
         }
-        */
-        Vector3 vecFront = transform.forward.normalized;
-        if (Input.GetKey(KeyCode.Z) && Input.GetKey(KeyCode.LeftShift) && vel < MOVE_SPEED)
-        {
-            //pos.x += (BOOST_SPEED - vel) * vecFront.x * Time.deltaTime;
-            //pos.y += (BOOST_SPEED - vel) * vecFront.y * Time.deltaTime;
-            //pos.z += (BOOST_SPEED - vel) * vecFront.z * Time.deltaTime;
-
-            pos += (BOOST_SPEED - vel) * vecFront * Time.deltaTime;
-            this.HP -= 0.1f;
-        }
-        else if (Input.GetKey(KeyCode.Z))
-        {
-            this.HP -= 0.05f;
-            pos.x += (MOVE_SPEED - vel) * vecFront.x * Time.deltaTime;
-            pos.y += (MOVE_SPEED - vel) * vecFront.y * Time.deltaTime;
-            pos.z += (MOVE_SPEED - vel) * vecFront.z * Time.deltaTime;
-            //pos += (MOVE_SPEED - vel) * vecFront * Time.deltaTime;
-
-            if (vel > 0)
-            {
-                vel -= 0.05f;
-            }
-            else if (vel < 0)
-            {
-                vel = 0.0f;
-            }
-        }
-        else if (Input.GetKeyUp(KeyCode.Z) && vel < MAX_SPEED)
-        {
-            StopFlag = true;
-        }
-
-        if (StopFlag == true)
-        {
-            pos.x += (MOVE_SPEED - vel) * vecFront.x * Time.deltaTime;
-            pos.y += (MOVE_SPEED - vel) * vecFront.y * Time.deltaTime;
-            pos.z += (MOVE_SPEED - vel) * vecFront.z * Time.deltaTime;
-            vel += 0.05f;
-            if (vel > MOVE_SPEED)
-            {
-                vel = MOVE_SPEED;
-                StopFlag = false;
-            }
-        }
-
-        //Debug.Log(pos-ppos);
-        Debug.Log(vecFront);
-
+        float angleWheel = MaxAngle * Steering;
+        FrontWheel.steerAngle = angleWheel;
+        var rotate = FrontWheel.transform.localRotation;
+        rotate = Quaternion.AngleAxis(angleWheel, Vector3.up);
+        FrontWheel.transform.localRotation = rotate;
         
-        if (Input.GetKey(KeyCode.RightArrow))
+        float torqu = MaxTorqu * EngineTorqu;
+        if (Input.GetKey(KeyCode.Z))
         {
-
-            if (transform.rotation.y < 10.0f) rot.y += CURVE_SPEED * Time.deltaTime;
-            //moveVector = new Vector3(0.5f, 0, Mathf.Sqrt(3) / 2);
+            EngineTorqu += 0.01f;
         }
-        else if (Input.GetKeyUp(KeyCode.RightArrow))
+        float breakTorqu = MaxBreakTorqu * BreakTorqu;
+        if (Input.GetKey(KeyCode.A))
         {
-            //rot.y = 0.0f;
-            //moveVector = new Vector3(0, 0, 1.0f);
+            FrontWheel.brakeTorque = breakTorqu;
         }
-
-        if (Input.GetKey(KeyCode.LeftArrow))
+        if (Input.GetKey(KeyCode.S))
         {
-            if (transform.rotation.y > -10.0f) rot.y -= CURVE_SPEED * Time.deltaTime;
-            //moveVector = new Vector3(-0.5f, 0, Mathf.Sqrt(3) / 2);
+            RearWheel.brakeTorque = breakTorqu;
         }
-        else if (Input.GetKeyUp(KeyCode.LeftArrow))
-        {
-            //rot.y = 0.0f;
-            //moveVector = new Vector3(0, 0, 1.0f);
-        }
-        
-
-
-        if (Input.GetKeyDown(KeyCode.X) && sumDrink > 0)
-        {
-            sumDrink--;
-            drink.UpdateDrink(sumDrink);
-            this.HP += MAX_HP / 6;
-        }
-        transform.position = pos;
-        transform.rotation = rot;
-
-        ppos = pos;
-
+        RearWheel.motorTorque = torqu;
     }
+    
 
+    /*
+    public void FixedUpdate()
+    {
+        float motor = maxMotorTorque * Input.GetAxis("Vertical");
+        float steering = maxSteeringAngle * Input.GetAxis("Horizontal");
+
+        foreach (AxleInfo axleInfo in axleInfos)
+        {
+            if (axleInfo.leftWheel != null)
+            {
+                if (axleInfo.steering)
+                {
+                    axleInfo.leftWheel.steerAngle = steering;
+                }
+                if (axleInfo.motor)
+                {
+                    axleInfo.leftWheel.motorTorque = motor;
+                }
+                ApplyLocalPositionToVisuals(axleInfo.leftWheel);
+            }
+
+            if (axleInfo.rightWheel != null)
+            {
+                if (axleInfo.steering)
+                {
+                    axleInfo.rightWheel.steerAngle = steering;
+                }
+                if (axleInfo.motor)
+                {
+                    axleInfo.rightWheel.motorTorque = motor;
+                }
+                ApplyLocalPositionToVisuals(axleInfo.rightWheel);
+            }
+        }
+    }
+    */
 }
 

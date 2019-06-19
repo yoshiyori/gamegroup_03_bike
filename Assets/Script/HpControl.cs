@@ -5,7 +5,7 @@ using UnityEngine;
 public class HpControl : MonoBehaviour
 {
     public UnityEngine.UI.Slider sliderHP;
-    public BikeControl bike;
+    public BoxControl bike;
 
     void Start()
     {
