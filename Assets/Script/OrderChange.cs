@@ -9,6 +9,7 @@ public class OrderChange : MonoBehaviour
     public int changeFlag = 0;
 
     private int i = 0;
+    MeshFilter[] mes = new MeshFilter[3];
 
     void Start()
     {
@@ -16,6 +17,9 @@ public class OrderChange : MonoBehaviour
         {
             order[i] = i;
         }
+
+        mes[0] = bikes[0].GetComponent<MeshFilter>();
+        
     }
     
     void Update()
@@ -25,7 +29,7 @@ public class OrderChange : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.S)) changeFlag = 2;
 
         var pos = bikes[order[changeFlag]].transform.position;
-        Vector3 vecF = bikes[order[changeFlag]].transform.forward.normalized;
+        Vector3 vecSide = new Vector3(bikes[order[0]].transform.forward.normalized.x, bikes[order[0]].transform.forward.normalized.y, bikes[order[0]].transform.forward.normalized.z);
 
         if (changeFlag == 1)//真ん中が先頭に行く
         {
@@ -33,10 +37,9 @@ public class OrderChange : MonoBehaviour
             bikes[order[1]].transform.LookAt(bikes[order[2]].transform);
             bikes[order[1]].transform.rotation = Quaternion.AngleAxis(-i, Vector3.up);
 
-            pos += 5 * vecF * Time.deltaTime;
+            pos += 5 * vecSide * Time.deltaTime;
 
         }
-
         if (changeFlag != 0) bikes[order[changeFlag]].transform.position = pos;
 
     }
