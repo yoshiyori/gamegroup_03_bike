@@ -21,18 +21,18 @@ public class CameraControl : MonoBehaviour
     void Update()
     {
         transform.position += player.transform.position - targetPos;
-        OtherCamera.transform.position += player.transform.position - targetPos;
+        //OtherCamera.transform.position += player.transform.position - targetPos;
         targetPos = player.transform.position;
         //transform.position = player.transform.position + offset;
         if (Box.CurveFlag == 1)
         {
             transform.RotateAround(player.transform.position, Vector3.up, 1);
-            OtherCamera.transform.RotateAround(player.transform.position, Vector3.up, 1);
+            //OtherCamera.transform.RotateAround(player.transform.position, Vector3.up, 1);
         }
         else if (Box.CurveFlag == 2)
         {
             transform.RotateAround(player.transform.position, Vector3.up, -1);
-            OtherCamera.transform.RotateAround(player.transform.position, Vector3.up, -1);
+            //OtherCamera.transform.RotateAround(player.transform.position, Vector3.up, -1);
         }
 
         if (Input.GetKeyDown(KeyCode.Q))
