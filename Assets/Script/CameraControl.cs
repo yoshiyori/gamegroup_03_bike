@@ -11,34 +11,38 @@ public class CameraControl : MonoBehaviour
     public GameObject MainCamera;
     public GameObject OtherCamera;
 
+    private Camera camera;
     // Start is called before the first frame update
     void Start()
     {
         targetPos = player.transform.position;
+        camera = GetComponent<Camera>();
     }
 
     // Update is called once per frame
     void Update()
     {
         transform.position += player.transform.position - targetPos;
-        OtherCamera.transform.position += player.transform.position - targetPos;
+       // OtherCamera.transform.position += player.transform.position - targetPos;
         targetPos = player.transform.position;
         //transform.position = player.transform.position + offset;
         if (Box.CurveFlag == 1)
         {
+            
             transform.RotateAround(player.transform.position, Vector3.up, 1);
-            OtherCamera.transform.RotateAround(player.transform.position, Vector3.up, 1);
+            //OtherCamera.transform.RotateAround(player.transform.position, Vector3.up, 1);
         }
         else if (Box.CurveFlag == 2)
         {
             transform.RotateAround(player.transform.position, Vector3.up, -1);
-            OtherCamera.transform.RotateAround(player.transform.position, Vector3.up, -1);
+           // OtherCamera.transform.RotateAround(player.transform.position, Vector3.up, -1);
         }
 
         if (Input.GetKeyDown(KeyCode.Q))
         {
-            MainCamera.SetActive(!MainCamera.activeSelf);
-            OtherCamera.SetActive(!OtherCamera.activeSelf);
+           // MainCamera.SetActive(!MainCamera.activeSelf);
+            //OtherCamera.SetActive(!OtherCamera.activeSelf);
+            camera.enabled = !camera.enabled;
         }
     }
 }

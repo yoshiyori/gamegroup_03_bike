@@ -13,6 +13,9 @@ public class BackControl : MonoBehaviour
     public BoxControl Box;
     private float vel;
 
+    public GameObject Bike_box;
+    public GameObject Bike_box2;
+    public GameObject Bike_box3;
 
     public float HP;
 
@@ -21,6 +24,10 @@ public class BackControl : MonoBehaviour
         FrontTarget = Flt.transform.position;
         this.HP = Box.MAX_HP;
         vel = Box.MOVE_SPEED;
+        Bike_box.transform.parent = Bike_box2.transform; // 変更
+        Bike_box.transform.parent = Bike_box3.transform; // 変更
+
+
     }
 
 
@@ -79,6 +86,12 @@ public class BackControl : MonoBehaviour
             {
                 vel = Box.MOVE_SPEED;
             }
+            if(this.HP <= 0)
+                {
+                vel += 0.05f;
+            }
+        
+
         }
 
 

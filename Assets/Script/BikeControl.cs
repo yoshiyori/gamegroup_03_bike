@@ -17,6 +17,9 @@ public class BikeControl : MonoBehaviour
     public Drink drink;
     private int sumDrink = 2;
 
+    public Drink Drink2;
+    private int speedDrink =  2;
+
     private bool RCflag = false;
     private bool LCflag = false;
 
@@ -63,6 +66,7 @@ public class BikeControl : MonoBehaviour
         {
             EngineTorqu += 0.01f;
         }
+       
         float breakTorqu = MaxBreakTorqu * BreakTorqu;
         if (Input.GetKey(KeyCode.A))
         {
